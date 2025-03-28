@@ -1,0 +1,111 @@
+.budget-summary {
+    margin-top: 30px;
+  }
+  
+  .budget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .budget-header h3 {
+    font-size: 1.1rem;
+    color: #2c3e50;
+  }
+  
+  .budgets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .budget-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s;
+  }
+  
+  .budget-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .budget-card .budget-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .budget-icon {
+    width: 45px;
+    height: 45px;
+    background-color: #3498db;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 12px;
+    font-size: 1.1rem;
+  }
+  
+  .budget-card h4 {
+    font-size: 1rem;
+    color: #2c3e50;
+    margin-right: 8px;
+  }
+  
+  .budget-card small {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+  }
+  
+  .budget-progress {
+    margin-bottom: 15px;
+  }
+  
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: #34495e;
+  }
+  
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #ecf0f1;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .progress {
+    height: 100%;
+    background-color: #2ecc71;
+    transition: width 0.5s ease;
+  }
+  
+  .progress.over {
+    background-color: #e74c3c;
+  }
+  
+  .budget-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+  }
+  
+  @media (max-width: 1200px) {
+    .budgets-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .budgets-grid {
+      grid-template-columns: 1fr;
+    }
+  }

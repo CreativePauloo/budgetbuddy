@@ -1,0 +1,94 @@
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .card-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 15px;
+    font-size: 1.3rem;
+    color: white;
+    flex-shrink: 0;
+  }
+  
+  .income-card .card-icon {
+    background-color: #4CAF50;
+  }
+  
+  .expense-card .card-icon {
+    background-color: #F44336;
+  }
+  
+  .savings-card .card-icon {
+    background-color: #2196F3;
+  }
+  
+  .goal-card .card-icon {
+    background-color: #FFC107;
+    color: #333;
+  }
+  
+  .card-content h3 {
+    font-size: 0.95rem;
+    color: #7f8c8d;
+    margin-bottom: 8px;
+  }
+  
+  .card-content p {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+  
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #ecf0f1;
+    border-radius: 4px;
+    margin-top: 12px;
+    overflow: hidden;
+  }
+  
+  .progress {
+    height: 100%;
+    border-radius: 4px;
+    background-color: #2ecc71;
+    transition: width 0.5s ease;
+  }
+  
+  .progress.over {
+    background-color: #e74c3c;
+  }
+  
+  @media (max-width: 1200px) {
+    .summary-cards {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .summary-cards {
+      grid-template-columns: 1fr;
+    }
+  }
