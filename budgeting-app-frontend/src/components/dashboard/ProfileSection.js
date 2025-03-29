@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './ProfileSection.css';
 
-const ProfileSection = ({ user }) => {
+const ProfileSection = ({ user, setUser }) => {
   const [editMode, setEditMode] = useState(false);
   const [profileForm, setProfileForm] = useState({
     first_name: user.first_name || '',
@@ -10,14 +10,24 @@ const ProfileSection = ({ user }) => {
     email: user.email
   });
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setProfileForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('access_token');
     try {
-      await axios.patch('http://localhost:8000/api/user/', profileForm, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setUser(prev => ({ ...prev, ...profileForm }));
+      const response = await axios.patch(
+        'http://localhost:8000/api/user/', 
+        profileForm, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setUser(response.data);
       setEditMode(false);
       alert('Profile updated successfully!');
     } catch (error) {
@@ -38,7 +48,8 @@ const ProfileSection = ({ user }) => {
               type="text"
               name="first_name"
               value={profileForm.first_name}
-              onChange={(e) => setProfileForm({...profileForm, first_name: e.target.value})}
+              onChange={handleInputChange}
+              required
             />
           </div>
           
@@ -48,7 +59,8 @@ const ProfileSection = ({ user }) => {
               type="text"
               name="last_name"
               value={profileForm.last_name}
-              onChange={(e) => setProfileForm({...profileForm, last_name: e.target.value})}
+              onChange={handleInputChange}
+              required
             />
           </div>
           
@@ -58,17 +70,26 @@ const ProfileSection = ({ user }) => {
               type="email"
               name="email"
               value={profileForm.email}
-              onChange={(e) => setProfileForm({...profileForm, email: e.target.value})}
+              onChange={handleInputChange}
               disabled
             />
           </div>
           
           <div className="form-actions">
-            <button type="submit" className="btn btn-primary">Save Changes</button>
+            <button type="submit" className="btn btn-primary">
+              Save Changes
+            </button>
             <button 
               type="button" 
               className="btn btn-secondary"
-              onClick={() => setEditMode(false)}
+              onClick={() => {
+                setEditMode(false);
+                setProfileForm({
+                  first_name: user.first_name || '',
+                  last_name: user.last_name || '',
+                  email: user.email
+                });
+              }}
             >
               Cancel
             </button>

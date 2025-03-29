@@ -59,7 +59,6 @@ const Dashboard = () => {
           }).catch(() => ({ data: [] }))
         ]);
 
-        // Process dashboard data
         const processedData = {
           ...dashboardRes.data,
           savings_goal: {
@@ -75,7 +74,6 @@ const Dashboard = () => {
         setBudgets(budgetsRes.data);
         setMonthlyTrends(formatMonthlyData(monthlyRes.data));
 
-        // Process transactions and categories
         if (dashboardRes.data.recent_transactions) {
           const expenses = dashboardRes.data.recent_transactions.filter(t => t.type === 'expense');
           setExpenseTransactions(expenses);
@@ -280,7 +278,6 @@ const Dashboard = () => {
               title="Recent Transactions"
               onDelete={handleDeleteTransaction}
               onEdit={handleEditTransaction}
-              onAdd={handleAddTransaction}
             />
           </>
         )}
@@ -297,7 +294,6 @@ const Dashboard = () => {
             expenseCategories={expenseCategories}
             onDelete={handleDeleteTransaction}
             onEdit={handleEditTransaction}
-            onAdd={handleAddTransaction}
           />
         )}
 
@@ -319,7 +315,10 @@ const Dashboard = () => {
         )}
 
         {activeMenu === 'profile' && (
-          <ProfileSection user={user} />
+          <ProfileSection 
+            user={user} 
+            setUser={setUser}
+          />
         )}
 
         {activeMenu === 'notifications' && (
