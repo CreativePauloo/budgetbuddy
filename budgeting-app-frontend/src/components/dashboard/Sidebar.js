@@ -1,7 +1,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faHome, faMoneyBillWave, faChartLine, 
+  faHome, faExchangeAlt, faChartLine, 
   faUser, faBell, faSignOutAlt 
 } from '@fortawesome/free-solid-svg-icons';
 import './Sidebar.css';
@@ -16,7 +16,7 @@ const Sidebar = ({ activeMenu, setActiveMenu, notifications, handleLogout }) => 
       <ul className="sidebar-menu">
         {[
           { id: 'dashboard', icon: faHome, label: 'Dashboard' },
-          { id: 'expenses', icon: faMoneyBillWave, label: 'Expenses' },
+          { id: 'transactions', icon: faExchangeAlt, label: 'Transactions' },
           { id: 'overview', icon: faChartLine, label: 'Overview' },
           { id: 'profile', icon: faUser, label: 'Profile' },
           { id: 'notifications', icon: faBell, label: 'Notifications' }

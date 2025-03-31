@@ -20,20 +20,22 @@ const TransactionsTable = ({
 }) => {
   const [showTransactionForm, setShowTransactionForm] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState(null);
+  const [transactionType, setTransactionType] = useState('all'); // New state for transaction type filter
 
   const filteredTransactions = showFilters 
     ? transactions.filter(transaction => {
         const matchesSearch = transaction.description.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = selectedCategory === 'all' || transaction.category === selectedCategory;
-        return matchesSearch && matchesCategory;
+        const matchesType = transactionType === 'all' || transaction.type === transactionType;
+        return matchesSearch && matchesCategory && matchesType;
       })
     : transactions;
 
-  const incomeTotal = filteredTransactions
+  const incomeTotal = transactions
     .filter(t => t.type === 'income')
     .reduce((sum, t) => sum + Number(t.amount), 0);
 
-  const expenseTotal = filteredTransactions
+  const expenseTotal = transactions
     .filter(t => t.type === 'expense')
     .reduce((sum, t) => sum + Number(t.amount), 0);
 
@@ -103,6 +105,16 @@ const TransactionsTable = ({
               </option>
             ))}
           </select>
+
+          {/* Add transaction type filter */}
+          <select
+            value={transactionType}
+            onChange={(e) => setTransactionType(e.target.value)}
+          >
+            <option value="all">All Types</option>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
         </div>
       )}
 
@@ -113,6 +125,7 @@ const TransactionsTable = ({
               <th>Date</th>
               <th>Description</th>
               <th>Category</th>
+              <th>Type</th>
               <th>Amount</th>
               {showFilters && <th>Actions</th>}
             </tr>
@@ -129,6 +142,7 @@ const TransactionsTable = ({
                       {transaction.category}
                     </span>
                   </td>
+                  <td>{transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1)}</td>
                   <td className={transaction.type === 'income' ? 'income' : 'expense'}>
                     {transaction.type === 'income' ? '+' : '-'}${formatMoney(Number(transaction.amount))}
                   </td>
@@ -154,7 +168,7 @@ const TransactionsTable = ({
               ))
             ) : (
               <tr>
-                <td colSpan={showFilters ? 5 : 4} className="no-transactions">
+                <td colSpan={showFilters ? 6 : 5} className="no-transactions">
                   No transactions found
                 </td>
               </tr>
@@ -165,6 +179,7 @@ const TransactionsTable = ({
 
       {showTransactionForm && (
         <TransactionForm 
+          isOpen={showTransactionForm}
           onClose={() => {
             setShowTransactionForm(false);
             setEditingTransaction(null);

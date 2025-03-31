@@ -4,58 +4,83 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import './BudgetForm.css';
 
-const BudgetForm = ({ onClose, onBudgetAdded, expenseCategories }) => {
+const BudgetForm = ({ 
+  isOpen, 
+  onClose, 
+  onBudgetAdded, 
+  expenseCategories = [] 
+}) => {
   const [newBudget, setNewBudget] = useState({
-    category: 'food',
+    category: expenseCategories.length > 0 ? expenseCategories[0].name : '',
     limit: '',
     period: 'monthly'
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('access_token');
-    
+    setIsSubmitting(true);
+    setError('');
+
     try {
       const response = await axios.post(
-        'http://localhost:8000/api/budgets/', 
-        { 
-          ...newBudget, 
-          limit: parseFloat(newBudget.limit) 
+        'http://localhost:8000/api/budgets/',
+        {
+          category: newBudget.category,
+          limit: parseFloat(newBudget.limit),
+          period: newBudget.period
         },
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            'Content-Type': 'application/json'
+          }
+        }
       );
-      
-      onBudgetAdded(response.data);
-      setNewBudget({ category: 'food', limit: '', period: 'monthly' }); // Reset form state
+
+      if (onBudgetAdded) onBudgetAdded(response.data);
+      setNewBudget({
+        category: expenseCategories.length > 0 ? expenseCategories[0].name : '',
+        limit: '',
+        period: 'monthly'
+      });
       onClose();
     } catch (error) {
-      console.error('Error creating budget:', error);
-      alert('Failed to create budget. Please try again.');
+      console.error('Budget creation error:', error.response?.data);
+      setError(error.response?.data?.detail || 'Failed to create budget');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="modal-overlay">
-      <div className="modal">
+    <div className="modal-overlay" onClick={() => !isSubmitting && onClose()}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h3>Create New Budget</h3>
           <button 
-            className="btn-icon" 
-            onClick={onClose}
+            className="close-btn" 
+            onClick={() => !isSubmitting && onClose()}
+            disabled={isSubmitting}
           >
             <FontAwesomeIcon icon={faTimes} />
           </button>
         </div>
         
+        {error && <div className="form-error">{error}</div>}
+        
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="budget-category">Category</label>
             <select
-              id="budget-category" // Added id
-              name="category" // Added name
+              id="budget-category"
               value={newBudget.category}
               onChange={(e) => setNewBudget({...newBudget, category: e.target.value})}
-              autoComplete="off" // Added valid autocomplete value
+              required
+              disabled={isSubmitting}
             >
               {expenseCategories.map(cat => (
                 <option key={cat.name} value={cat.name}>
@@ -69,26 +94,25 @@ const BudgetForm = ({ onClose, onBudgetAdded, expenseCategories }) => {
             <label htmlFor="budget-limit">Amount</label>
             <input
               type="number"
-              id="budget-limit" // Added id
-              name="limit" // Added name
-              step="0.01"
-              min="0.01"
+              id="budget-limit"
               value={newBudget.limit}
               onChange={(e) => setNewBudget({...newBudget, limit: e.target.value})}
+              step="0.01"
+              min="0.01"
               placeholder="Budget limit"
               required
-              autoComplete="off" // Added valid autocomplete value
+              disabled={isSubmitting}
             />
           </div>
           
           <div className="form-group">
             <label htmlFor="budget-period">Period</label>
             <select
-              id="budget-period" // Added id
-              name="period" // Added name
+              id="budget-period"
               value={newBudget.period}
               onChange={(e) => setNewBudget({...newBudget, period: e.target.value})}
-              autoComplete="off" // Added valid autocomplete value
+              required
+              disabled={isSubmitting}
             >
               <option value="weekly">Weekly</option>
               <option value="monthly">Monthly</option>
@@ -97,15 +121,20 @@ const BudgetForm = ({ onClose, onBudgetAdded, expenseCategories }) => {
           </div>
           
           <div className="form-actions">
-            <button type="submit" className="btn btn-primary">
-              Create Budget
-            </button>
             <button 
               type="button" 
-              className="btn btn-secondary"
-              onClick={onClose}
+              className="btn btn-secondary" 
+              onClick={() => !isSubmitting && onClose()}
+              disabled={isSubmitting}
             >
               Cancel
+            </button>
+            <button 
+              type="submit" 
+              className="btn btn-primary"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Creating...' : 'Create Budget'}
             </button>
           </div>
         </form>

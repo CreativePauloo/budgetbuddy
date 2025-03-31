@@ -69,9 +69,9 @@ const BudgetSummary = ({ budgets, expenseCategories }) => {
         )}
       </div>
 
-      {/* Place the modal outside of the grid to avoid styling conflicts */}
       {showBudgetForm && (
         <BudgetForm 
+          isOpen={showBudgetForm}
           onClose={handleClose}
           onBudgetAdded={() => window.location.reload()}
           expenseCategories={expenseCategories}

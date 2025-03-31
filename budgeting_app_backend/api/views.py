@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.conf import settings
@@ -24,6 +25,36 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 import json
 from reportlab.pdfgen import canvas
 from io import BytesIO
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import joblib
+import os
+
+# Load the model when the server starts
+try:
+    model_path = os.path.join(settings.BASE_DIR, 'api', 'utils', 'transaction_classifier.pkl')
+    model = joblib.load(model_path)
+    print(f"Model loaded successfully from {model_path}")  # Debug print
+except Exception as e:
+    print(f"Error loading model: {str(e)}")  # Debug print
+    model = None
+
+@api_view(['POST'])
+def categorize_transaction(request):
+    if not model:
+        return Response({'error': 'Model not loaded'}, status=503)
+    
+    description = request.data.get('description', '')
+    if not description:
+        return Response({'error': 'Description required'}, status=400)
+    
+    try:
+        # Predict category
+        category_encoded = model.predict([description])[0]
+        category = model.named_steps['clf'].classes_[category_encoded]
+        return Response({'category': category})
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
 
 class DashboardDataView(APIView):
     permission_classes = [IsAuthenticated]
@@ -130,13 +161,26 @@ class TransactionView(APIView):
         return Response(serializer.data)
     
     def post(self, request):
-        data = request.data.copy()
-        data['user'] = request.user.id
-        serializer = TransactionSerializer(data=data)
+        # Ensure date is set if not provided
+        if 'date' not in request.data or not request.data['date']:
+            request.data['date'] = timezone.now().date().isoformat()
+        
+        serializer = TransactionSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def put(self, request, pk):
+        try:
+            transaction = Transaction.objects.get(pk=pk, user=request.user)
+            serializer = TransactionSerializer(transaction, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Transaction.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
     
     def delete(self, request, pk):
         try:
@@ -145,7 +189,23 @@ class TransactionView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Transaction.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
+        
+class TransactionCategoriesView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        transaction_type = request.query_params.get('type', 'expense')
+        
+        if transaction_type == 'income':
+            categories = Transaction.INCOME_CATEGORIES
+        else:
+            categories = Transaction.EXPENSE_CATEGORIES
+        
+        return Response({
+            'type': transaction_type,
+            'categories': [{'value': c[0], 'label': c[1]} for c in categories]
+        })
+        
 class MonthlyTransactionsView(APIView):
     permission_classes = [IsAuthenticated]
     

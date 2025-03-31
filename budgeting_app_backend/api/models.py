@@ -8,7 +8,7 @@ class Transaction(models.Model):
         ('expense', 'Expense'),
     ]
     
-    CATEGORY_CHOICES = [
+    EXPENSE_CATEGORIES = [
         ('food', 'Food'),
         ('transportation', 'Transportation'),
         ('housing', 'Housing'),
@@ -19,15 +19,26 @@ class Transaction(models.Model):
         ('other', 'Other'),
     ]
     
+    INCOME_CATEGORIES = [
+        ('salary', 'Salary'),
+        ('freelance', 'Freelance'),
+        ('investments', 'Investments'),
+        ('gifts', 'Gifts'),
+        ('other-income', 'Other Income'),
+    ]
+    
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     type = models.CharField(max_length=10, choices=TYPE_CHOICES)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.CharField(max_length=255)
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='other')
+    category = models.CharField(max_length=20)
     date = models.DateField(default=timezone.now)
-    
+
     def __str__(self):
-        return f"{self.type} - {self.amount} - {self.description}"
+        return f"{self.type} - {self.amount} - {self.description[:20]}"
+    
+    def get_category_choices(self):
+        return self.INCOME_CATEGORIES if self.type == 'income' else self.EXPENSE_CATEGORIES
 
 class SavingsGoal(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -62,7 +73,7 @@ class Budget(models.Model):
     ]
     
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    category = models.CharField(max_length=20, choices=Transaction.CATEGORY_CHOICES)
+    category = models.CharField(max_length=20, choices=Transaction.EXPENSE_CATEGORIES)
     limit = models.DecimalField(max_digits=10, decimal_places=2)
     period = models.CharField(max_length=10, choices=PERIOD_CHOICES, default='monthly')
     

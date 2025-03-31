@@ -12,6 +12,8 @@ from .views import (
     CustomTokenObtainPairView,
     ForgotPasswordView,
     CommentView,
+    categorize_transaction,
+    TransactionCategoriesView,
 )
 
 urlpatterns = [
@@ -25,8 +27,10 @@ urlpatterns = [
     path('notifications/', NotificationView.as_view(), name='notifications'),
     path('transactions/monthly/', MonthlyTransactionsView.as_view(), name='monthly-transactions'),
     path('transactions/<int:pk>/', TransactionView.as_view(), name='transaction-detail'),
+    path('api/transaction-categories/', TransactionCategoriesView.as_view(), name='transaction-categories'),
     path('notifications/<int:pk>/', NotificationView.as_view(), name='notification-detail'),
     path('budgets/', BudgetView.as_view(), name='budgets'),
     path('reports/', ReportView.as_view(), name='reports'),
     path('chatbot/', ChatbotView.as_view(), name='chatbot'),
+    path('categorize/', categorize_transaction, name='categorize-transaction'),
 ]

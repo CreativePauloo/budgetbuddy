@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faPlus, 
-  faFilePdf,
-} from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faFilePdf, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import Sidebar from './Sidebar';
 import SummaryCards from './SummaryCards';
 import ChartsSection from './ChartsSection';
 import TransactionsTable from './TransactionsTable';
 import TransactionForm from './TransactionForm';
+import BudgetForm from './BudgetForm';
 import BudgetSummary from './BudgetSummary';
 import ProfileSection from './ProfileSection';
 import NotificationsList from './NotificationsList';
@@ -30,100 +28,205 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showTransactionForm, setShowTransactionForm] = useState(false);
+  const [showBudgetForm, setShowBudgetForm] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [editingTransaction, setEditingTransaction] = useState(null);
+  const [isDataLoading, setIsDataLoading] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        navigate('/login');
-        return;
-      }
+  const fetchDashboardData = useCallback(async () => {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
 
-      try {
-        const [dashboardRes, userRes, notificationsRes, budgetsRes, monthlyRes] = await Promise.all([
-          axios.get('http://localhost:8000/api/dashboard/', {
-            headers: { Authorization: `Bearer ${token}` }
-          }),
-          axios.get('http://localhost:8000/api/user/', {
-            headers: { Authorization: `Bearer ${token}` }
-          }),
-          axios.get('http://localhost:8000/api/notifications/', {
-            headers: { Authorization: `Bearer ${token}` }
-          }).catch(() => ({ data: [] })),
-          axios.get('http://localhost:8000/api/budgets/', {
-            headers: { Authorization: `Bearer ${token}` }
-          }).catch(() => ({ data: [] })),
-          axios.get('http://localhost:8000/api/transactions/monthly/', {
-            headers: { Authorization: `Bearer ${token}` }
-          }).catch(() => ({ data: [] }))
-        ]);
+    setIsDataLoading(true);
+    try {
+      const [dashboardRes, userRes, notificationsRes, budgetsRes, monthlyRes] = await Promise.all([
+        axios.get('http://localhost:8000/api/dashboard/', {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get('http://localhost:8000/api/user/', {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get('http://localhost:8000/api/notifications/', {
+          headers: { Authorization: `Bearer ${token}` }
+        }).catch(() => ({ data: [] })),
+        axios.get('http://localhost:8000/api/budgets/', {
+          headers: { Authorization: `Bearer ${token}` }
+        }).catch(() => ({ data: [] })),
+        axios.get('http://localhost:8000/api/transactions/monthly/', {
+          headers: { Authorization: `Bearer ${token}` }
+        }).catch(() => ({ data: [] }))
+      ]);
 
-        const processedData = {
-          ...dashboardRes.data,
-          savings_goal: {
-            ...dashboardRes.data.savings_goal,
-            current_amount: Number(dashboardRes.data.savings_goal.current_amount),
-            target_amount: Number(dashboardRes.data.savings_goal.target_amount)
-          }
-        };
-        
-        setDashboardData(processedData);
-        setUser(userRes.data);
-        setNotifications(notificationsRes.data);
-        setBudgets(budgetsRes.data);
-        setMonthlyTrends(formatMonthlyData(monthlyRes.data));
-
-        if (dashboardRes.data.recent_transactions) {
-          const expenses = dashboardRes.data.recent_transactions.filter(t => t.type === 'expense');
-          setExpenseTransactions(expenses);
-          
-          const categoryTotals = {};
-          expenses.forEach(expense => {
-            if (!categoryTotals[expense.category]) {
-              categoryTotals[expense.category] = 0;
-            }
-            categoryTotals[expense.category] += Number(expense.amount);
-          });
-          
-          setExpenseCategories(Object.entries(categoryTotals).map(([name, amount]) => ({
-            name,
-            amount,
-            icon: getCategoryIcon(name)
-          })));
+      const processedData = {
+        ...dashboardRes.data,
+        savings_goal: {
+          ...dashboardRes.data.savings_goal,
+          current_amount: Number(dashboardRes.data.savings_goal.current_amount),
+          target_amount: Number(dashboardRes.data.savings_goal.target_amount)
         }
+      };
+      
+      setDashboardData(processedData);
+      setUser(userRes.data);
+      setNotifications(notificationsRes.data);
+      setBudgets(budgetsRes.data);
+      setMonthlyTrends(formatMonthlyData(monthlyRes.data));
 
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        localStorage.removeItem('access_token');
-        navigate('/login');
+      if (dashboardRes.data.recent_transactions) {
+        const expenses = dashboardRes.data.recent_transactions.filter(t => t.type === 'expense');
+        setExpenseTransactions(expenses);
+        
+        const categoryTotals = {};
+        expenses.forEach(expense => {
+          if (!categoryTotals[expense.category]) {
+            categoryTotals[expense.category] = 0;
+          }
+          categoryTotals[expense.category] += Number(expense.amount);
+        });
+        
+        setExpenseCategories(Object.entries(categoryTotals).map(([name, amount]) => ({
+          name,
+          amount,
+          icon: getCategoryIcon(name)
+        })));
       }
-    };
-
-    fetchDashboardData();
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      localStorage.removeItem('access_token');
+      navigate('/login');
+    } finally {
+      setIsDataLoading(false);
+    }
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('access_token');
-    navigate('/login');
-  };
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
-  const markNotificationAsRead = async (id) => {
-    const token = localStorage.getItem('access_token');
-    try {
-      await axios.patch(`http://localhost:8000/api/notifications/${id}/`, 
-        { is_read: true },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setNotifications(notifications.map(n => 
-        n.id === id ? { ...n, is_read: true } : n
-      ));
-    } catch (error) {
-      console.error('Error marking notification as read:', error);
+  const handleLogout = () => {
+    if (window.confirm('Are you sure you want to log out?')) {
+      localStorage.removeItem('access_token');
+      navigate('/login');
     }
   };
 
-  const generateReport = async (type = 'monthly') => {
+  const handleAddNewTransaction = useCallback(() => {
+    setEditingTransaction(null);
+    setShowTransactionForm(true);
+  }, []);
+
+  const handleEditTransaction = useCallback((transaction) => {
+    setEditingTransaction(transaction);
+    setShowTransactionForm(true);
+  }, []);
+
+  const handleTransactionSubmit = useCallback(async (transactionData) => {
+    setIsSubmitting(true);
+    setFormError('');
+    
+    try {
+      const token = localStorage.getItem('access_token');
+      if (editingTransaction) {
+        await axios.put(
+          `http://localhost:8000/api/transactions/${editingTransaction.id}/`,
+          transactionData,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } else {
+        await axios.post(
+          'http://localhost:8000/api/transactions/',
+          transactionData,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
+      await refreshData();
+      setShowTransactionForm(false);
+      setEditingTransaction(null);
+    } catch (error) {
+      console.error('Transaction error:', error);
+      setFormError(error.response?.data?.detail || 'Failed to save transaction');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [editingTransaction]);
+
+  const markNotificationAsRead = useCallback(async (id) => {
+    const token = localStorage.getItem('access_token');
+    try {
+      await axios.patch(
+        `http://localhost:8000/api/notifications/${id}/`, 
+        { is_read: true },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setNotifications(prevNotifications => 
+        prevNotifications.map(n => 
+          n.id === id ? { ...n, is_read: true } : n
+        )
+      );
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  }, []);
+
+  const handleAddBudget = useCallback(async (budget) => {
+    const token = localStorage.getItem('access_token');
+    try {
+      await axios.post(
+        'http://localhost:8000/api/budgets/',
+        budget,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      await refreshData();
+      setShowBudgetForm(false);
+    } catch (error) {
+      console.error('Error creating budget:', error);
+      alert('Failed to create budget. Please try again.');
+    }
+  }, []);
+
+  const handleDeleteTransaction = useCallback(async (transactionId) => {
+    const token = localStorage.getItem('access_token');
+    try {
+      await axios.delete(
+        `http://localhost:8000/api/transactions/${transactionId}/`, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      await refreshData();
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
+      alert(`Failed to delete transaction. ${error.response?.data?.detail || 'Please try again.'}`);
+    }
+  }, []);
+
+  const refreshData = useCallback(async () => {
+    const token = localStorage.getItem('access_token');
+    try {
+      const [dashboardRes, monthlyRes, budgetsRes] = await Promise.all([
+        axios.get('http://localhost:8000/api/dashboard/', {
+          headers: { Authorization: `Bearer ${token}` } }
+        ),
+        axios.get('http://localhost:8000/api/transactions/monthly/', {
+          headers: { Authorization: `Bearer ${token}` } }
+        ),
+        axios.get('http://localhost:8000/api/budgets/', {
+          headers: { Authorization: `Bearer ${token}` } }
+        )
+      ]);
+
+      setDashboardData(dashboardRes.data);
+      setMonthlyTrends(formatMonthlyData(monthlyRes.data));
+      setBudgets(budgetsRes.data);
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+    }
+  }, []);
+
+  const generateReport = useCallback(async (type = 'monthly') => {
     try {
       const response = await axios.get(`http://localhost:8000/api/reports/?type=${type}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
@@ -141,79 +244,7 @@ const Dashboard = () => {
       console.error('Error generating report:', error);
       alert('Failed to generate report');
     }
-  };
-
-  const handleAddTransaction = async (transaction) => {
-    const token = localStorage.getItem('access_token');
-    try {
-      await axios.post(
-        'http://localhost:8000/api/transactions/',
-        {
-          ...transaction,
-          user: user.id
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      await refreshData();
-    } catch (error) {
-      console.error('Error adding transaction:', error);
-      alert('Failed to add transaction. Please try again.');
-    }
-  };
-
-  const handleEditTransaction = async (transaction) => {
-    const token = localStorage.getItem('access_token');
-    try {
-      await axios.put(
-        `http://localhost:8000/api/transactions/${transaction.id}/`,
-        transaction,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      await refreshData();
-    } catch (error) {
-      console.error('Error updating transaction:', error);
-      alert('Failed to update transaction. Please try again.');
-    }
-  };
-
-  const handleDeleteTransaction = async (transactionId) => {
-    const token = localStorage.getItem('access_token');
-    try {
-      await axios.delete(
-        `http://localhost:8000/api/transactions/${transactionId}/`, 
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-      await refreshData();
-    } catch (error) {
-      console.error('Error deleting transaction:', error);
-      alert(`Failed to delete transaction. ${error.response?.data?.detail || 'Please try again.'}`);
-    }
-  };
-
-  const refreshData = async () => {
-    const token = localStorage.getItem('access_token');
-    try {
-      const [dashboardRes, monthlyRes, budgetsRes] = await Promise.all([
-        axios.get('http://localhost:8000/api/dashboard/', {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        axios.get('http://localhost:8000/api/transactions/monthly/', {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        axios.get('http://localhost:8000/api/budgets/', {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-      ]);
-
-      setDashboardData(dashboardRes.data);
-      setMonthlyTrends(formatMonthlyData(monthlyRes.data));
-      setBudgets(budgetsRes.data);
-    } catch (error) {
-      console.error('Error refreshing data:', error);
-    }
-  };
+  }, []);
 
   if (!dashboardData || !user) {
     return <div className="loading">Loading...</div>;
@@ -238,13 +269,23 @@ const Dashboard = () => {
         <div className="content-header">
           <h1>{activeMenu.charAt(0).toUpperCase() + activeMenu.slice(1)}</h1>
           <div className="header-actions">
-            {activeMenu === 'expenses' && (
-              <button 
-                className="btn btn-primary"
-                onClick={() => setShowTransactionForm(true)}
-              >
-                <FontAwesomeIcon icon={faPlus} /> Add Transaction
-              </button>
+            {activeMenu === 'transactions' && (
+              <>
+                <button 
+                  className="btn btn-primary"
+                  onClick={handleAddNewTransaction}
+                  disabled={isSubmitting}
+                >
+                  <FontAwesomeIcon icon={faPlus} /> 
+                  {isSubmitting ? 'Processing...' : 'Add Transaction'}
+                </button>
+                <button 
+                  className="btn btn-primary"
+                  onClick={() => setShowBudgetForm(true)}
+                >
+                  <FontAwesomeIcon icon={faPlus} /> Add Budget
+                </button>
+              </>
             )}
             {activeMenu === 'overview' && (
               <button 
@@ -254,6 +295,13 @@ const Dashboard = () => {
                 <FontAwesomeIcon icon={faFilePdf} /> Generate Report
               </button>
             )}
+            <button 
+              className="btn btn-secondary"
+              onClick={handleLogout}
+              title="Logout"
+            >
+              <FontAwesomeIcon icon={faSignOutAlt} /> Logout
+            </button>
           </div>
         </div>
 
@@ -282,10 +330,10 @@ const Dashboard = () => {
           </>
         )}
 
-        {activeMenu === 'expenses' && (
+        {activeMenu === 'transactions' && (
           <TransactionsTable 
-            transactions={expenseTransactions}
-            title="Expenses"
+            transactions={dashboardData.recent_transactions || []}
+            title="Transactions"
             showFilters={true}
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
@@ -294,6 +342,7 @@ const Dashboard = () => {
             expenseCategories={expenseCategories}
             onDelete={handleDeleteTransaction}
             onEdit={handleEditTransaction}
+            onAdd={handleAddNewTransaction}
           />
         )}
 
@@ -333,11 +382,33 @@ const Dashboard = () => {
       
       {showTransactionForm && (
         <TransactionForm 
-          onClose={() => setShowTransactionForm(false)}
-          onSubmit={async (transaction) => {
-            await handleAddTransaction(transaction);
+          isOpen={showTransactionForm}
+          onClose={() => {
             setShowTransactionForm(false);
+            setEditingTransaction(null);
           }}
+          onSubmit={handleTransactionSubmit}
+          initialData={editingTransaction}
+          isSubmitting={isSubmitting}
+          error={formError}
+          categories={[
+            'food', 'transportation', 'housing',
+            'entertainment', 'utilities', 'health',
+            'education', 'other'
+          ]}
+          incomeCategories={[
+            'salary', 'freelance', 'investments',
+            'gifts', 'other-income'
+          ]}
+        />
+      )}
+
+      {showBudgetForm && (
+        <BudgetForm 
+          isOpen={showBudgetForm}
+          onClose={() => setShowBudgetForm(false)}
+          onBudgetAdded={handleAddBudget}
+          expenseCategories={expenseCategories}
         />
       )}
     </div>

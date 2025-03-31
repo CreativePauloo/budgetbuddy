@@ -17,12 +17,34 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
 class TransactionSerializer(serializers.ModelSerializer):
+    date = serializers.DateField(required=False, default=timezone.now)
+    
     class Meta:
         model = Transaction
         fields = ['id', 'type', 'amount', 'description', 'category', 'date', 'user']
         extra_kwargs = {
-            'user': {'read_only': True}
+            'user': {'read_only': True},
         }
+    
+    def validate(self, data):
+        # Ensure date is always set
+        if 'date' not in data or data['date'] is None:
+            data['date'] = timezone.now().date()
+        
+        # Validate category based on type
+        transaction_type = data.get('type', self.instance.type if self.instance else None)
+        if transaction_type == 'income':
+            valid_categories = [cat[0] for cat in Transaction.INCOME_CATEGORIES]
+        else:
+            valid_categories = [cat[0] for cat in Transaction.EXPENSE_CATEGORIES]
+        
+        if data.get('category') not in valid_categories:
+            raise serializers.ValidationError(
+                f"Invalid category for {transaction_type} transaction. "
+                f"Valid categories are: {', '.join(valid_categories)}"
+            )
+        
+        return data
 
 class SavingsGoalSerializer(serializers.ModelSerializer):
     progress = serializers.SerializerMethodField()
