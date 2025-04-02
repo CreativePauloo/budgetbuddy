@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/pmwen/OneDrive/Desktop/budgeting-app/budgeting_app_backend/mlruns/0/2c763226f5f0499dbe8d1ff6c871ee90/artifacts
+end_time: 1743484489782
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 2c763226f5f0499dbe8d1ff6c871ee90
+run_name: skillful-koi-398
+run_uuid: 2c763226f5f0499dbe8d1ff6c871ee90
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743484488921
+status: 3
+tags: []
+user_id: pmwen

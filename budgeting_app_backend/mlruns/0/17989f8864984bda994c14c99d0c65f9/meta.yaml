@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/pmwen/OneDrive/Desktop/budgeting-app/budgeting_app_backend/mlruns/0/17989f8864984bda994c14c99d0c65f9/artifacts
+end_time: 1743457723972
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 17989f8864984bda994c14c99d0c65f9
+run_name: fun-hog-449
+run_uuid: 17989f8864984bda994c14c99d0c65f9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743457723740
+status: 4
+tags: []
+user_id: pmwen

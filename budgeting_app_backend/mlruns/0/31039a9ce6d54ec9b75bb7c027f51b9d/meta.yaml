@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/pmwen/OneDrive/Desktop/budgeting-app/budgeting_app_backend/mlruns/0/31039a9ce6d54ec9b75bb7c027f51b9d/artifacts
+end_time: 1743500631822
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 31039a9ce6d54ec9b75bb7c027f51b9d
+run_name: capable-penguin-47
+run_uuid: 31039a9ce6d54ec9b75bb7c027f51b9d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743500631058
+status: 3
+tags: []
+user_id: pmwen

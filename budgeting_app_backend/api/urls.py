@@ -12,7 +12,7 @@ from .views import (
     CustomTokenObtainPairView,
     ForgotPasswordView,
     CommentView,
-    categorize_transaction,
+    predict_category,
     TransactionCategoriesView,
 )
 
@@ -32,5 +32,5 @@ urlpatterns = [
     path('budgets/', BudgetView.as_view(), name='budgets'),
     path('reports/', ReportView.as_view(), name='reports'),
     path('chatbot/', ChatbotView.as_view(), name='chatbot'),
-    path('categorize/', categorize_transaction, name='categorize-transaction'),
+    path('categorize/', predict_category, name='predict_category'),
 ]

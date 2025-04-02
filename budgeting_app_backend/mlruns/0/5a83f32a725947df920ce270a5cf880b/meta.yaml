@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/pmwen/OneDrive/Desktop/budgeting-app/budgeting_app_backend/mlruns/0/5a83f32a725947df920ce270a5cf880b/artifacts
+end_time: 1743485198236
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 5a83f32a725947df920ce270a5cf880b
+run_name: powerful-ray-450
+run_uuid: 5a83f32a725947df920ce270a5cf880b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743485197592
+status: 3
+tags: []
+user_id: pmwen

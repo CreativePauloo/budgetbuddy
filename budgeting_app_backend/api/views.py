@@ -29,30 +29,35 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import joblib
 import os
+from .ml.predictor import TransactionClassifier
+from datetime import datetime
 
-# Load the model when the server starts
-try:
-    model_path = os.path.join(settings.BASE_DIR, 'api', 'utils', 'transaction_classifier.pkl')
-    model = joblib.load(model_path)
-    print(f"Model loaded successfully from {model_path}")  # Debug print
-except Exception as e:
-    print(f"Error loading model: {str(e)}")  # Debug print
-    model = None
+classifier = TransactionClassifier()
 
 @api_view(['POST'])
-def categorize_transaction(request):
-    if not model:
-        return Response({'error': 'Model not loaded'}, status=503)
-    
-    description = request.data.get('description', '')
-    if not description:
-        return Response({'error': 'Description required'}, status=400)
-    
+def predict_category(request):
     try:
-        # Predict category
-        category_encoded = model.predict([description])[0]
-        category = model.named_steps['clf'].classes_[category_encoded]
-        return Response({'category': category})
+        description = request.data.get('description', '')
+        amount = request.data.get('amount', 0)
+        date_str = request.data.get('date', None)
+        
+        if not description:
+            return Response({'error': 'Description required'}, status=400)
+            
+        date = datetime.strptime(date_str, '%Y-%m-%d') if date_str else datetime.now()
+        
+        category, probabilities = classifier.predict(description, amount, date)
+        
+        return Response({
+            'category': category,
+            'confidence': float(max(probabilities)),
+            'alternatives': [
+                {'category': cls, 'score': float(score)} 
+                for cls, score in zip(classifier.classes, probabilities)
+                if score > 0.1 and cls != category
+            ]
+        })
+        
     except Exception as e:
         return Response({'error': str(e)}, status=500)
 

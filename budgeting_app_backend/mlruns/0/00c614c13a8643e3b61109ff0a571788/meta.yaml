@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/pmwen/OneDrive/Desktop/budgeting-app/budgeting_app_backend/mlruns/0/00c614c13a8643e3b61109ff0a571788/artifacts
+end_time: 1743457449064
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 00c614c13a8643e3b61109ff0a571788
+run_name: handsome-wolf-989
+run_uuid: 00c614c13a8643e3b61109ff0a571788
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743457448961
+status: 4
+tags: []
+user_id: pmwen

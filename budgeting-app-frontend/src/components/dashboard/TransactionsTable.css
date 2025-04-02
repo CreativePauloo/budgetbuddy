@@ -164,3 +164,69 @@ td.expense {
   padding: 20px;
   color: #7f8c8d;
 }
+
+.description-with-ai {
+  position: relative;
+}
+
+.ai-loading {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #3498db;
+}
+
+.ai-suggestions {
+  margin: 15px 0;
+}
+
+.ai-suggestions label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.suggestion-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.suggestion {
+  padding: 6px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 15px;
+  background: #f8f9fa;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.suggestion:hover {
+  background: #e9ecef;
+}
+
+.suggestion.selected {
+  background: #e6f7ff;
+  border-color: #3498db;
+  color: #3498db;
+}
+
+.confidence-badge {
+  background: rgba(0,0,0,0.08);
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  margin-left: 3px;
+}
+
+.selected-icon {
+  color: #4CAF50;
+  margin-left: 3px;
+}

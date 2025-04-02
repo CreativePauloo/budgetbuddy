@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faMagic, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 import './TransactionForm.css';
 
 const TransactionForm = ({ 
@@ -8,10 +9,10 @@ const TransactionForm = ({
   onClose, 
   onSubmit, 
   initialData = null, 
-  categories = [],
-  incomeCategories = [],
   isSubmitting = false,
-  error = ''
+  error = '',
+  categories = [],
+  incomeCategories = []
 }) => {
   const [formData, setFormData] = useState({
     type: 'expense',
@@ -21,22 +22,23 @@ const TransactionForm = ({
     date: new Date().toISOString().split('T')[0]
   });
 
+  // AI Suggestions State
+  const [aiSuggestions, setAiSuggestions] = useState([]);
+  const [isPredicting, setIsPredicting] = useState(false);
+  const [lastPrediction, setLastPrediction] = useState(null);
+
+  // Reset form when opening/closing or when initialData changes
   useEffect(() => {
     if (isOpen) {
       if (initialData) {
-        const initialDate = initialData.date 
-          ? initialData.date.includes('T') 
-            ? initialData.date.split('T')[0] 
-            : initialData.date
-          : new Date().toISOString().split('T')[0];
-
         setFormData({
-          type: initialData.type || 'expense',
-          amount: initialData.amount ? initialData.amount.toString() : '',
-          description: initialData.description || '',
-          category: initialData.category || (categories.length > 0 ? categories[0] : ''),
-          date: initialDate
+          type: initialData.type,
+          amount: initialData.amount.toString(),
+          description: initialData.description,
+          category: initialData.category,
+          date: initialData.date?.split('T')[0] || new Date().toISOString().split('T')[0]
         });
+        setAiSuggestions([]);
       } else {
         setFormData({
           type: 'expense',
@@ -49,18 +51,79 @@ const TransactionForm = ({
     }
   }, [isOpen, initialData, categories]);
 
+  // Fetch AI suggestions when description or amount changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (formData.description.length > 3 && formData.amount) {
+        fetchCategorySuggestions();
+      }
+    }, 500); // Debounce 500ms
+
+    return () => clearTimeout(timer);
+  }, [formData.description, formData.amount]);
+
+  const fetchCategorySuggestions = async () => {
+    if (!formData.description || isPredicting) return;
+    
+    setIsPredicting(true);
+    try {
+      const response = await axios.post(
+        'http://localhost:8000/api/predict-category/',
+        {
+          description: formData.description,
+          amount: formData.amount,
+          date: formData.date
+        }
+      );
+      
+      setAiSuggestions([
+        { 
+          name: response.data.category, 
+          confidence: response.data.confidence,
+          isSelected: false 
+        },
+        ...response.data.alternatives.map(alt => ({
+          name: alt.category,
+          confidence: alt.score,
+          isSelected: false
+        }))
+      ]);
+
+      // Auto-select if high confidence
+      if (response.data.confidence > 0.7) {
+        handleSuggestionSelect(response.data.category);
+      }
+
+      setLastPrediction(response.data.category);
+    } catch (error) {
+      console.error('Prediction failed:', error);
+    } finally {
+      setIsPredicting(false);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
+    // Reset category when type changes
     if (name === 'type') {
+      const newCategories = value === 'income' ? incomeCategories : categories;
       setFormData(prev => ({
         ...prev,
-        category: value === 'income' 
-          ? (incomeCategories.length > 0 ? incomeCategories[0] : '')
-          : (categories.length > 0 ? categories[0] : '')
+        category: newCategories.length > 0 ? newCategories[0] : ''
       }));
     }
+  };
+
+  const handleSuggestionSelect = (category) => {
+    setFormData(prev => ({ ...prev, category }));
+    setAiSuggestions(prev => 
+      prev.map(suggestion => ({
+        ...suggestion,
+        isSelected: suggestion.name === category
+      }))
+    );
   };
 
   const handleSubmit = (e) => {
@@ -141,16 +204,48 @@ const TransactionForm = ({
 
             <div className="form-group">
               <label htmlFor="description">Description</label>
-              <input
-                type="text"
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                required
-                disabled={isSubmitting}
-              />
+              <div className="description-with-ai">
+                <input
+                  type="text"
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  required
+                  disabled={isSubmitting}
+                />
+                {isPredicting && (
+                  <span className="ai-loading">
+                    <FontAwesomeIcon icon={faMagic} spin />
+                  </span>
+                )}
+              </div>
             </div>
+
+            {/* AI Suggestions */}
+            {aiSuggestions.length > 0 && (
+              <div className="ai-suggestions">
+                <label>AI Suggestions</label>
+                <div className="suggestion-buttons">
+                  {aiSuggestions.map((suggestion, index) => (
+                    <button
+                      type="button"
+                      key={index}
+                      className={`suggestion ${suggestion.isSelected ? 'selected' : ''}`}
+                      onClick={() => handleSuggestionSelect(suggestion.name)}
+                    >
+                      {suggestion.name}
+                      <span className="confidence-badge">
+                        {Math.round(suggestion.confidence * 100)}%
+                      </span>
+                      {suggestion.isSelected && (
+                        <FontAwesomeIcon icon={faCheckCircle} className="selected-icon" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="form-group">
               <label htmlFor="category">Category</label>

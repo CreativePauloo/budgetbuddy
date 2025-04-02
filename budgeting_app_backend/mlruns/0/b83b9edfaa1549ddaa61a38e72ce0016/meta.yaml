@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/pmwen/OneDrive/Desktop/budgeting-app/budgeting_app_backend/mlruns/0/b83b9edfaa1549ddaa61a38e72ce0016/artifacts
+end_time: 1743485554148
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: b83b9edfaa1549ddaa61a38e72ce0016
+run_name: hilarious-bird-944
+run_uuid: b83b9edfaa1549ddaa61a38e72ce0016
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743485553648
+status: 3
+tags: []
+user_id: pmwen
