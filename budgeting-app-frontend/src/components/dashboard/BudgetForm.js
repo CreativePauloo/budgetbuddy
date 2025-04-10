@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import './BudgetForm.css';
+import './BudgetForm.css'; 
 
 const BudgetForm = ({ 
   isOpen, 
@@ -57,10 +57,10 @@ const BudgetForm = ({
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={() => !isSubmitting && onClose()}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
+    <div className="budget-modal-overlay" onClick={() => !isSubmitting && onClose()}>
+      <div className="budget-modal" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h3>Create New Budget</h3>
+          <h2>Create New Budget</h2>
           <button 
             className="close-btn" 
             onClick={() => !isSubmitting && onClose()}

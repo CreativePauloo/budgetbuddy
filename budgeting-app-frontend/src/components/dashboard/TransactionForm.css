@@ -1,4 +1,5 @@
-.modal-overlay {
+/* Modal Overlay */
+.transaction-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -10,14 +11,14 @@
   align-items: center;
   z-index: 1000;
   opacity: 1;
-  visibility: visible;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition: opacity 0.3s ease;
 }
 
-.modal {
+/* Modal Container */
+.transaction-modal {
   background-color: white;
   border-radius: 8px;
-  width: 100%;
+  width: 90%;
   max-width: 500px;
   padding: 25px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
@@ -25,6 +26,7 @@
   overflow-y: auto;
 }
 
+/* Modal Header */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -67,8 +69,7 @@
 }
 
 .form-group input,
-.form-group select,
-.form-group textarea {
+.form-group select {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid #ddd;
@@ -83,6 +84,7 @@
   outline: none;
 }
 
+/* Radio Buttons */
 .radio-group {
   display: flex;
   gap: 20px;
@@ -97,11 +99,6 @@
   font-weight: normal;
 }
 
-.radio-input {
-  position: absolute;
-  opacity: 0;
-}
-
 .radio-custom {
   display: inline-block;
   width: 18px;
@@ -111,11 +108,11 @@
   position: relative;
 }
 
-.radio-input:checked + .radio-custom {
+input[type="radio"]:checked + .radio-custom {
   border-color: #3498db;
 }
 
-.radio-input:checked + .radio-custom::after {
+input[type="radio"]:checked + .radio-custom::after {
   content: '';
   position: absolute;
   width: 10px;
@@ -125,6 +122,68 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+/* AI Suggestions */
+.ai-suggestions {
+  margin: 15px 0;
+}
+
+.ai-suggestions label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #34495e;
+}
+
+.suggestion-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.suggestion {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s;
+}
+
+.suggestion:hover {
+  border-color: #3498db;
+}
+
+.suggestion.selected {
+  background: #3498db;
+  color: white;
+  border-color: #3498db;
+}
+
+.confidence-badge {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  margin-left: 5px;
+}
+
+.suggestion.selected .confidence-badge {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.selected-icon {
+  margin-left: 5px;
+}
+
+/* Loading Indicator */
+.ai-loading {
+  margin-left: 10px;
+  color: #3498db;
 }
 
 /* Form Actions */
@@ -194,10 +253,53 @@
   font-size: 0.9rem;
 }
 
+.suggestion {
+  transition: all 0.2s ease;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.suggestion:hover {
+  border-color: #3498db;
+}
+
+.suggestion.selected {
+  background: #3498db;
+  color: white;
+  border-color: #3498db;
+}
+
+.confidence-badge {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  margin-left: 5px;
+}
+
+.suggestion.selected .confidence-badge {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.selected-icon {
+  margin-left: 5px;
+}
+
+.ai-loading {
+  margin-left: 10px;
+  color: #3498db;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
-  .modal {
-    width: 90%;
+  .transaction-modal {
+    width: 95%;
     padding: 20px;
   }
   
@@ -208,11 +310,6 @@
 }
 
 @media (max-width: 480px) {
-  .modal {
-    width: 95%;
-    padding: 15px;
-  }
-  
   .form-actions {
     flex-direction: column-reverse;
   }

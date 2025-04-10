@@ -1,8 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes, faMagic, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import './TransactionForm.css';
+
+// Memoized Suggestion Button Component
+const SuggestionButton = React.memo(({ suggestion, onClick }) => (
+  <button
+    type="button"
+    className={`suggestion ${suggestion.isSelected ? 'selected' : ''}`}
+    onClick={onClick}
+  >
+    {suggestion.name}
+    <span className="confidence-badge">
+      {Math.round(suggestion.confidence * 100)}%
+    </span>
+    {suggestion.isSelected && (
+      <FontAwesomeIcon icon={faCheckCircle} className="selected-icon" />
+    )}
+  </button>
+));
 
 const TransactionForm = ({ 
   isOpen, 
@@ -22,101 +39,40 @@ const TransactionForm = ({
     date: new Date().toISOString().split('T')[0]
   });
 
-  // AI Suggestions State
   const [aiSuggestions, setAiSuggestions] = useState([]);
   const [isPredicting, setIsPredicting] = useState(false);
-  const [lastPrediction, setLastPrediction] = useState(null);
+  const timerRef = useRef(null);
+  const formDataRef = useRef(formData);
 
-  // Reset form when opening/closing or when initialData changes
+  // Sync ref with formData
+  useEffect(() => {
+    formDataRef.current = formData;
+  }, [formData]);
+
+  // Reset form when opening or when initialData changes
   useEffect(() => {
     if (isOpen) {
-      if (initialData) {
-        setFormData({
-          type: initialData.type,
-          amount: initialData.amount.toString(),
-          description: initialData.description,
-          category: initialData.category,
-          date: initialData.date?.split('T')[0] || new Date().toISOString().split('T')[0]
-        });
-        setAiSuggestions([]);
-      } else {
-        setFormData({
-          type: 'expense',
-          amount: '',
-          description: '',
-          category: categories.length > 0 ? categories[0] : '',
-          date: new Date().toISOString().split('T')[0]
-        });
-      }
+      const newData = initialData ? {
+        type: initialData.type,
+        amount: initialData.amount.toString(),
+        description: initialData.description,
+        category: initialData.category,
+        date: initialData.date?.split('T')[0] || new Date().toISOString().split('T')[0]
+      } : {
+        type: 'expense',
+        amount: '',
+        description: '',
+        category: categories.length > 0 ? categories[0] : '',
+        date: new Date().toISOString().split('T')[0]
+      };
+      
+      setFormData(newData);
+      setAiSuggestions([]);
     }
   }, [isOpen, initialData, categories]);
 
-  // Fetch AI suggestions when description or amount changes
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (formData.description.length > 3 && formData.amount) {
-        fetchCategorySuggestions();
-      }
-    }, 500); // Debounce 500ms
-
-    return () => clearTimeout(timer);
-  }, [formData.description, formData.amount]);
-
-  const fetchCategorySuggestions = async () => {
-    if (!formData.description || isPredicting) return;
-    
-    setIsPredicting(true);
-    try {
-      const response = await axios.post(
-        'http://localhost:8000/api/predict-category/',
-        {
-          description: formData.description,
-          amount: formData.amount,
-          date: formData.date
-        }
-      );
-      
-      setAiSuggestions([
-        { 
-          name: response.data.category, 
-          confidence: response.data.confidence,
-          isSelected: false 
-        },
-        ...response.data.alternatives.map(alt => ({
-          name: alt.category,
-          confidence: alt.score,
-          isSelected: false
-        }))
-      ]);
-
-      // Auto-select if high confidence
-      if (response.data.confidence > 0.7) {
-        handleSuggestionSelect(response.data.category);
-      }
-
-      setLastPrediction(response.data.category);
-    } catch (error) {
-      console.error('Prediction failed:', error);
-    } finally {
-      setIsPredicting(false);
-    }
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Reset category when type changes
-    if (name === 'type') {
-      const newCategories = value === 'income' ? incomeCategories : categories;
-      setFormData(prev => ({
-        ...prev,
-        category: newCategories.length > 0 ? newCategories[0] : ''
-      }));
-    }
-  };
-
-  const handleSuggestionSelect = (category) => {
+  // Stable callback for suggestion selection
+  const handleSuggestionSelect = useCallback((category) => {
     setFormData(prev => ({ ...prev, category }));
     setAiSuggestions(prev => 
       prev.map(suggestion => ({
@@ -124,6 +80,82 @@ const TransactionForm = ({
         isSelected: suggestion.name === category
       }))
     );
+  }, []);
+
+  // Handle AI suggestions without infinite loops
+  useEffect(() => {
+    if (!isOpen || isPredicting) return;
+
+    const { description, amount } = formData;
+    const { description: prevDesc, amount: prevAmt } = formDataRef.current;
+
+    const shouldFetch = description.length > 3 && 
+                       amount && 
+                       (description !== prevDesc || amount !== prevAmt);
+
+    if (shouldFetch) {
+      clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(async () => {
+        setIsPredicting(true);
+        try {
+          const response = await axios.post(
+            'http://localhost:8000/api/predict-category/',
+            {
+              description: formData.description,
+              amount: formData.amount,
+              date: formData.date
+            }
+          );
+          
+          setAiSuggestions(prev => {
+            const newSuggestions = [
+              { 
+                name: response.data.category, 
+                confidence: response.data.confidence,
+                isSelected: false 
+              },
+              ...response.data.alternatives.map(alt => ({
+                name: alt.category,
+                confidence: alt.score,
+                isSelected: false
+              }))
+            ];
+            
+            // Preserve selection if category is already selected
+            return newSuggestions.map(suggestion => ({
+              ...suggestion,
+              isSelected: suggestion.name === formData.category
+            }));
+          });
+
+          if (response.data.confidence > 0.7) {
+            setFormData(prev => ({
+              ...prev,
+              category: response.data.category
+            }));
+          }
+        } catch (error) {
+          console.error('Prediction failed:', error);
+        } finally {
+          setIsPredicting(false);
+        }
+      }, 500);
+    }
+
+    return () => clearTimeout(timerRef.current);
+  }, [formData.description, formData.amount, formData.date, isOpen, isPredicting]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    if (name === 'type') {
+      const newCategories = value === 'income' ? incomeCategories : categories;
+      setFormData(prev => ({
+        ...prev,
+        category: newCategories.length > 0 ? newCategories[0] : ''
+      }));
+    }
   };
 
   const handleSubmit = (e) => {
@@ -141,8 +173,8 @@ const TransactionForm = ({
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={() => !isSubmitting && onClose()}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
+    <div className="transaction-modal-overlay" onClick={() => !isSubmitting && onClose()}>
+      <div className="transaction-modal" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h2>{initialData ? 'Edit Transaction' : 'Add Transaction'}</h2>
           <button 
@@ -153,6 +185,7 @@ const TransactionForm = ({
             <FontAwesomeIcon icon={faTimes} />
           </button>
         </div>
+        
         <div className="modal-content">
           {error && <div className="form-error">{error}</div>}
 
@@ -222,26 +255,16 @@ const TransactionForm = ({
               </div>
             </div>
 
-            {/* AI Suggestions */}
             {aiSuggestions.length > 0 && (
               <div className="ai-suggestions">
                 <label>AI Suggestions</label>
                 <div className="suggestion-buttons">
-                  {aiSuggestions.map((suggestion, index) => (
-                    <button
-                      type="button"
-                      key={index}
-                      className={`suggestion ${suggestion.isSelected ? 'selected' : ''}`}
+                  {aiSuggestions.map((suggestion) => (
+                    <SuggestionButton
+                      key={suggestion.name}
+                      suggestion={suggestion}
                       onClick={() => handleSuggestionSelect(suggestion.name)}
-                    >
-                      {suggestion.name}
-                      <span className="confidence-badge">
-                        {Math.round(suggestion.confidence * 100)}%
-                      </span>
-                      {suggestion.isSelected && (
-                        <FontAwesomeIcon icon={faCheckCircle} className="selected-icon" />
-                      )}
-                    </button>
+                    />
                   ))}
                 </div>
               </div>
