@@ -100,6 +100,11 @@ class BudgetSerializer(serializers.ModelSerializer):
         if obj.limit == 0:
             return 0
         return (spent / obj.limit) * 100
+    
+    def create(self, validated_data):
+        # Automatically set the user from the request
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """
