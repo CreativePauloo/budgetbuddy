@@ -5,3 +5,6 @@ BudgetBuddy is my personal finance management application designed to help users
 The backend is structured to handle data processing, machine learning, and API management. I implemented data_preprocessor.py to clean and engineer transaction features, model_trainer.py to train a HistGradientBoostingClassifier for automatic transaction categorization, and predictor.py to serve real-time predictions. Django models (Transaction, Budget, SavingsGoal, etc.) define the database schema, while serializers ensure proper data validation and transformation. Views handle API logic for user interactions, and Celery automates periodic model retraining to maintain accuracy.
 
 On the frontend, React components like BudgetForm, TransactionsTable, and ChartsSection create an intuitive interface. The dashboard aggregates financial data into visual summaries, while the AI-assisted TransactionForm simplifies categorization. Notifications alert users to overspending or upcoming bills, and the ProfileSection allows personalization.
+
+PROJECT URL:
+https://budgeting-app-frontend-k5b8xbyr1-pauls-projects-fbad5db3.vercel.app
