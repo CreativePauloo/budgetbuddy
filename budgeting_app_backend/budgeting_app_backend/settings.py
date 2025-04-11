@@ -144,5 +144,6 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOWED_ORIGINS = [
+    "https://budgeting-app-frontend-k5b8xbyr1-pauls-projects-fbad5db3.vercel.app",  # Allow requests from your Vercel app
     "http://localhost:3000",  # Allow requests from your React app
 ]
