@@ -99,7 +99,7 @@ const TransactionForm = ({
         setIsPredicting(true);
         try {
           const response = await axios.post(
-            'http://localhost:8000/api/predict-category/',
+            'https://git.heroku.com/budgetbuddy-application.git/api/predict-category/',
             {
               description: formData.description,
               amount: formData.amount,

@@ -57,7 +57,7 @@ const Register = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:8000/api/register/', {
+            const response = await axios.post('https://git.heroku.com/budgetbuddy-application.git/api/register/', {
                 username: formData.username,
                 email: formData.email,
                 password: formData.password,

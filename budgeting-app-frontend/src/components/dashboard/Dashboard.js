@@ -45,19 +45,19 @@ const Dashboard = () => {
     setIsDataLoading(true);
     try {
       const [dashboardRes, userRes, notificationsRes, budgetsRes, monthlyRes] = await Promise.all([
-        axios.get('http://localhost:8000/api/dashboard/', {
+        axios.get('https://git.heroku.com/budgetbuddy-application.git/api/dashboard/', {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get('http://localhost:8000/api/user/', {
+        axios.get('https://git.heroku.com/budgetbuddy-application.git/api/user/', {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get('http://localhost:8000/api/notifications/', {
+        axios.get('https://git.heroku.com/budgetbuddy-application.git/api/notifications/', {
           headers: { Authorization: `Bearer ${token}` }
         }).catch(() => ({ data: [] })),
-        axios.get('http://localhost:8000/api/budgets/', {
+        axios.get('https://git.heroku.com/budgetbuddy-application.git/api/budgets/', {
           headers: { Authorization: `Bearer ${token}` }
         }).catch(() => ({ data: [] })),
-        axios.get('http://localhost:8000/api/transactions/monthly/', {
+        axios.get('https://git.heroku.com/budgetbuddy-application.git/api/transactions/monthly/', {
           headers: { Authorization: `Bearer ${token}` }
         }).catch(() => ({ data: [] }))
       ]);
@@ -133,13 +133,13 @@ const Dashboard = () => {
       const token = localStorage.getItem('access_token');
       if (editingTransaction) {
         await axios.put(
-          `http://localhost:8000/api/transactions/${editingTransaction.id}/`,
+          `https://git.heroku.com/budgetbuddy-application.git/api/transactions/${editingTransaction.id}/`,
           transactionData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
         await axios.post(
-          'http://localhost:8000/api/transactions/',
+          'https://git.heroku.com/budgetbuddy-application.git/api/transactions/',
           transactionData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -159,7 +159,7 @@ const Dashboard = () => {
     const token = localStorage.getItem('access_token');
     try {
       await axios.patch(
-        `http://localhost:8000/api/notifications/${id}/`, 
+        `https://git.heroku.com/budgetbuddy-application.git/api/notifications/${id}/`, 
         { is_read: true },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -177,7 +177,7 @@ const Dashboard = () => {
     const token = localStorage.getItem('access_token');
     try {
       await axios.post(
-        'http://localhost:8000/api/budgets/',
+        'https://git.heroku.com/budgetbuddy-application.git/api/budgets/',
         budget,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -193,7 +193,7 @@ const Dashboard = () => {
     const token = localStorage.getItem('access_token');
     try {
       await axios.delete(
-        `http://localhost:8000/api/transactions/${transactionId}/`, 
+        `https://git.heroku.com/budgetbuddy-application.git/api/transactions/${transactionId}/`, 
         { headers: { Authorization: `Bearer ${token}` } }
       );
       await refreshData();
@@ -207,13 +207,13 @@ const Dashboard = () => {
     const token = localStorage.getItem('access_token');
     try {
       const [dashboardRes, monthlyRes, budgetsRes] = await Promise.all([
-        axios.get('http://localhost:8000/api/dashboard/', {
+        axios.get('https://git.heroku.com/budgetbuddy-application.git/api/dashboard/', {
           headers: { Authorization: `Bearer ${token}` } }
         ),
-        axios.get('http://localhost:8000/api/transactions/monthly/', {
+        axios.get('https://git.heroku.com/budgetbuddy-application.git/api/transactions/monthly/', {
           headers: { Authorization: `Bearer ${token}` } }
         ),
-        axios.get('http://localhost:8000/api/budgets/', {
+        axios.get('https://git.heroku.com/budgetbuddy-application.git/api/budgets/', {
           headers: { Authorization: `Bearer ${token}` } }
         )
       ]);
@@ -228,7 +228,7 @@ const Dashboard = () => {
 
   const generateReport = useCallback(async (type = 'monthly') => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/reports/?type=${type}`, {
+      const response = await axios.get(`https://git.heroku.com/budgetbuddy-application.git/api/reports/?type=${type}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
         responseType: 'blob'
       });
