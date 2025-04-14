@@ -25,7 +25,7 @@ const BudgetForm = ({
 
     try {
       const response = await axios.post(
-        'https://git.heroku.com/budgetbuddy-application.git/api/budgets/',
+        'https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/budgets/',
         {
           category: newBudget.category,
           limit: parseFloat(newBudget.limit),

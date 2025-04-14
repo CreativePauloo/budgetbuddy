@@ -23,7 +23,7 @@ const Login = () => {
         setError('');
         
         try {
-            const response = await axios.post('https://git.heroku.com/budgetbuddy-application.git/api/login/', formData);
+            const response = await axios.post('https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/login/', formData);
             console.log('Login successful:', response.data);
             localStorage.setItem('access_token', response.data.access); // Store token
             navigate('/dashboard'); // Redirect to dashboard

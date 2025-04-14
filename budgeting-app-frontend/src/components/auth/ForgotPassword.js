@@ -11,7 +11,7 @@ const ForgotPassword = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('https://git.heroku.com/budgetbuddy-application.git/api/forgot-password/', { email });
+            const response = await axios.post('https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/forgot-password/', { email });
             setMessage(response.data.message);
         } catch (error) {
             setMessage(error.response ? error.response.data.error : 'An error occurred');

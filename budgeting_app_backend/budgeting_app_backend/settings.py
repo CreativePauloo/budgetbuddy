@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
-from django.core.management.utils import get_random_secret_key 
+import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,14 +23,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = get_random_secret_key()
+load_dotenv()  # Load .env file
+SECRET_KEY = os.getenv('SECRET_KEY')  # Read key from environment
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+SECURE_SSL_REDIRECT = True  # Redirect HTTP to HTTPS
+SESSION_COOKIE_SECURE = True  # Only send cookies over HTTPS
+CSRF_COOKIE_SECURE = True
 
- 
+ALLOWED_HOSTS = [
+    'https://budgetbuddy-application-60a2fed9b30b.herokuapp.com',  # Heroku domain
+    'localhost',
+]
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -56,7 +64,6 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.middleware.security.SecurityMiddleware',
 ]
 
 ROOT_URLCONF = 'budgeting_app_backend.urls'
@@ -148,7 +155,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Allow requests from your React app
 ]
 
-ALLOWED_HOSTS = ['https://git.heroku.com/budgetbuddy-application.git', 'localhost']
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

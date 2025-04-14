@@ -23,7 +23,7 @@ const ProfileSection = ({ user, setUser }) => {
     const token = localStorage.getItem('access_token');
     try {
       const response = await axios.patch(
-        'https://git.heroku.com/budgetbuddy-application.git/api/user/', 
+        'https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/user/', 
         profileForm, 
         { headers: { Authorization: `Bearer ${token}` } }
       );
