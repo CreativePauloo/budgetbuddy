@@ -155,10 +155,12 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "https://budgeting-app-frontend-k5b8xbyr1-pauls-projects-fbad5db3.vercel.app",  # Allow requests from your Vercel app
-    "http://localhost:3000",  # Allow requests from your React app
+    "https://budgeting-app-frontend-k5b8xbyr1-pauls-projects-fbad5db3.vercel.app",
+    "https://budgetbuddy-application-60a2fed9b30b.herokuapp.com",
+    "http://localhost:3000",
 ]
 
+CORS_ALLOW_CREDENTIALS = True
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
