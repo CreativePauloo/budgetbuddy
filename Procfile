@@ -1,1 +1,0 @@
-web: gunicorn budgeting_app_backend.wsgi

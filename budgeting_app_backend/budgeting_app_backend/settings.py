@@ -38,7 +38,7 @@ SESSION_COOKIE_SECURE = True  # Only send cookies over HTTPS
 CSRF_COOKIE_SECURE = True
 
 ALLOWED_HOSTS = [
-    'budgeting-app-backend.herokuapp.com',  # Heroku domain
+    'budgeting-application.herokuapp.com',
     'localhost',
 ]
 
