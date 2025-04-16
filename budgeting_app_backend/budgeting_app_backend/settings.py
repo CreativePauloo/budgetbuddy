@@ -38,7 +38,7 @@ SESSION_COOKIE_SECURE = True  # Only send cookies over HTTPS
 CSRF_COOKIE_SECURE = True
 
 ALLOWED_HOSTS = [
-    'https://budgetbuddy-application-60a2fed9b30b.herokuapp.com',  # Heroku domain
+    'budgeting-app-backend.herokuapp.com',  # Heroku domain
     'localhost',
 ]
 
@@ -150,17 +150,18 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Token expires in 1 hour
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),    # Refresh token expires in 1 day
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "https://budgeting-app-frontend-k5b8xbyr1-pauls-projects-fbad5db3.vercel.app",
-    "https://budgetbuddy-application-60a2fed9b30b.herokuapp.com",
-    "http://localhost:3000",
+    "https://budgeting-app-frontend.vercel.app",
+    "http://localhost:3000"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# For static files
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'
