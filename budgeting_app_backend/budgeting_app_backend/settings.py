@@ -14,6 +14,7 @@ from pathlib import Path
 from datetime import timedelta
 import os
 from dotenv import load_dotenv
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,10 +38,7 @@ SECURE_SSL_REDIRECT = True  # Redirect HTTP to HTTPS
 SESSION_COOKIE_SECURE = True  # Only send cookies over HTTPS
 CSRF_COOKIE_SECURE = True
 
-ALLOWED_HOSTS = [
-    'budgeting-application.herokuapp.com',
-    'localhost',
-]
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -95,10 +93,7 @@ WSGI_APPLICATION = 'budgeting_app_backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
 }
 
 
@@ -162,6 +157,6 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
-# For static files
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
