@@ -16,6 +16,8 @@ import Chatbot from '../common/Chatbot';
 import { formatMoney, getCategoryIcon, formatMonthlyData } from '../common/helpers';
 import './Dashboard.css';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://budgetbuddy-backend.onrender.com';
+
 const Dashboard = () => {
   const [activeMenu, setActiveMenu] = useState('dashboard');
   const [dashboardData, setDashboardData] = useState(null);
@@ -45,19 +47,19 @@ const Dashboard = () => {
     setIsDataLoading(true);
     try {
       const [dashboardRes, userRes, notificationsRes, budgetsRes, monthlyRes] = await Promise.all([
-        axios.get('https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/dashboard/', {
+        axios.get(`${API_BASE_URL}/api/dashboard/`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get('https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/user/', {
+        axios.get(`${API_BASE_URL}/api/user/`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get('https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/notifications/', {
+        axios.get(`${API_BASE_URL}/api/notifications/`, {
           headers: { Authorization: `Bearer ${token}` }
         }).catch(() => ({ data: [] })),
-        axios.get('https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/budgets/', {
+        axios.get(`${API_BASE_URL}/api/budgets/`, {
           headers: { Authorization: `Bearer ${token}` }
         }).catch(() => ({ data: [] })),
-        axios.get('https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/transactions/monthly/', {
+        axios.get(`${API_BASE_URL}/api/transactions/monthly/`, {
           headers: { Authorization: `Bearer ${token}` }
         }).catch(() => ({ data: [] }))
       ]);
@@ -133,13 +135,13 @@ const Dashboard = () => {
       const token = localStorage.getItem('access_token');
       if (editingTransaction) {
         await axios.put(
-          `https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/transactions/${editingTransaction.id}/`,
+          `${API_BASE_URL}/api/transactions/${editingTransaction.id}/`,
           transactionData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
         await axios.post(
-          'https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/transactions/',
+          `${API_BASE_URL}/api/transactions/`,
           transactionData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -159,7 +161,7 @@ const Dashboard = () => {
     const token = localStorage.getItem('access_token');
     try {
       await axios.patch(
-        `https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/notifications/${id}/`, 
+        `${API_BASE_URL}/api/notifications/${id}/`, 
         { is_read: true },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -177,7 +179,7 @@ const Dashboard = () => {
     const token = localStorage.getItem('access_token');
     try {
       await axios.post(
-        'https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/budgets/',
+        `${API_BASE_URL}/api/budgets/`,
         budget,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -193,7 +195,7 @@ const Dashboard = () => {
     const token = localStorage.getItem('access_token');
     try {
       await axios.delete(
-        `https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/transactions/${transactionId}/`, 
+        `${API_BASE_URL}/api/transactions/${transactionId}/`, 
         { headers: { Authorization: `Bearer ${token}` } }
       );
       await refreshData();
@@ -207,13 +209,13 @@ const Dashboard = () => {
     const token = localStorage.getItem('access_token');
     try {
       const [dashboardRes, monthlyRes, budgetsRes] = await Promise.all([
-        axios.get('https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/dashboard/', {
+        axios.get(`${API_BASE_URL}/api/dashboard/`, {
           headers: { Authorization: `Bearer ${token}` } }
         ),
-        axios.get('https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/transactions/monthly/', {
+        axios.get(`${API_BASE_URL}/api/transactions/monthly/`, {
           headers: { Authorization: `Bearer ${token}` } }
         ),
-        axios.get('https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/budgets/', {
+        axios.get(`${API_BASE_URL}/api/budgets/`, {
           headers: { Authorization: `Bearer ${token}` } }
         )
       ]);
@@ -228,7 +230,7 @@ const Dashboard = () => {
 
   const generateReport = useCallback(async (type = 'monthly') => {
     try {
-      const response = await axios.get(`https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/reports/?type=${type}`, {
+      const response = await axios.get(`${API_BASE_URL}/api/reports/?type=${type}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
         responseType: 'blob'
       });

@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://budgetbuddy-backend.onrender.com';
+
 const Login = () => {
     const [formData, setFormData] = useState({
         username: '', 
@@ -23,7 +25,7 @@ const Login = () => {
         setError('');
         
         try {
-            const response = await axios.post('https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/login/', formData);
+            const response = await axios.post(`${API_BASE_URL}/api/login/`, formData);
             console.log('Login successful:', response.data);
             localStorage.setItem('access_token', response.data.access); // Store token
             navigate('/dashboard'); // Redirect to dashboard

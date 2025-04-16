@@ -4,6 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import './BudgetForm.css'; 
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://budgetbuddy-backend.onrender.com';
+
 const BudgetForm = ({ 
   isOpen, 
   onClose, 
@@ -25,7 +27,7 @@ const BudgetForm = ({
 
     try {
       const response = await axios.post(
-        'https://budgetbuddy-application-60a2fed9b30b.herokuapp.com/api/budgets/',
+        `${API_BASE_URL}/api/budgets/`,
         {
           category: newBudget.category,
           limit: parseFloat(newBudget.limit),
