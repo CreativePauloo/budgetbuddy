@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "budgeting_app_backend"
+version = "1.0.0"
+description = "Django backend"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+Django = "5.1.6"
+gunicorn = "^21.2.0"
+whitenoise = "^6.6.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
