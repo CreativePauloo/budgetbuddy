@@ -21,7 +21,11 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-fallback-key-for-dev-
 
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'budgetbuddy-backend.onrender.com', 'localhost').split(',')
+# Fixed ALLOWED_HOSTS syntax
+ALLOWED_HOSTS = os.environ.get(
+    'ALLOWED_HOSTS', 
+    'budgetbuddy-backend.onrender.com,localhost'
+).split(',')
 
 # Application definition
 INSTALLED_APPS = [
