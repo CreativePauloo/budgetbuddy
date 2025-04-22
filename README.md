@@ -7,4 +7,4 @@ The backend is structured to handle data processing, machine learning, and API m
 On the frontend, React components like BudgetForm, TransactionsTable, and ChartsSection create an intuitive interface. The dashboard aggregates financial data into visual summaries, while the AI-assisted TransactionForm simplifies categorization. Notifications alert users to overspending or upcoming bills, and the ProfileSection allows personalization.
 
 PROJECT URL:
-https://budgeting-app-frontend-k5b8xbyr1-pauls-projects-fbad5db3.vercel.app
+https://budgetbuddy-frontend-nyw4.onrender.com
