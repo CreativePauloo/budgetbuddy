@@ -24,7 +24,7 @@ DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 # Fixed ALLOWED_HOSTS syntax
 ALLOWED_HOSTS = os.environ.get(
     'ALLOWED_HOSTS', 
-    'budgetbuddy-backend-eq1x.onrender.com','localhost'
+    'budgetbuddy-backend-eq1x.onrender.com, localhost'
 ).split(',')
 
 # Application definition
