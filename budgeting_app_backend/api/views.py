@@ -454,7 +454,7 @@ class ForgotPasswordView(APIView):
             user = User.objects.get(email=email)
             # Generate a reset token (you can use Django's built-in password reset tools)
             reset_token = "generate-a-unique-token-here"  # Replace with actual token generation logic
-            reset_link = f"https://budgeting-app-frontend-k5b8xbyr1-pauls-projects-fbad5db3.vercel.app/reset-password/{reset_token}"
+            reset_link = f"https://budgetbuddy-frontend-nyw4.onrender.com/reset-password/{reset_token}"
 
             # Send the reset link via email
             send_mail(

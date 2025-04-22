@@ -24,7 +24,7 @@ DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 # Fixed ALLOWED_HOSTS syntax
 ALLOWED_HOSTS = os.environ.get(
     'ALLOWED_HOSTS', 
-    'budgetbuddy-backend.onrender.com,localhost'
+    'budgetbuddy-backend-eq1x.onrender.com','localhost'
 ).split(',')
 
 # Application definition
@@ -143,7 +143,7 @@ SIMPLE_JWT = {
 
 # CORS Settings
 CORS_ALLOWED_ORIGINS = [
-    "https://budgetbuddy-frontend.onrender.com",
+    "https://budgetbuddy-frontend-nyw4.onrender.com",
     "http://localhost:3000",
 ]
 
@@ -193,4 +193,4 @@ LOGGING = {
 }
 
 # Custom settings
-FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://budgetbuddy-frontend.onrender.com')
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://budgetbuddy-frontend-nyw4.onrender.com')
