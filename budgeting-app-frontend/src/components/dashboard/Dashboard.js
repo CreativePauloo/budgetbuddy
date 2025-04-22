@@ -47,19 +47,19 @@ const Dashboard = () => {
     setIsDataLoading(true);
     try {
       const [dashboardRes, userRes, notificationsRes, budgetsRes, monthlyRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/api/dashboard/`, {
+        axios.get(`${API_BASE_URL}/dashboard/`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get(`${API_BASE_URL}/api/user/`, {
+        axios.get(`${API_BASE_URL}/user/`, {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get(`${API_BASE_URL}/api/notifications/`, {
+        axios.get(`${API_BASE_URL}/notifications/`, {
           headers: { Authorization: `Bearer ${token}` }
         }).catch(() => ({ data: [] })),
-        axios.get(`${API_BASE_URL}/api/budgets/`, {
+        axios.get(`${API_BASE_URL}/budgets/`, {
           headers: { Authorization: `Bearer ${token}` }
         }).catch(() => ({ data: [] })),
-        axios.get(`${API_BASE_URL}/api/transactions/monthly/`, {
+        axios.get(`${API_BASE_URL}/transactions/monthly/`, {
           headers: { Authorization: `Bearer ${token}` }
         }).catch(() => ({ data: [] }))
       ]);
@@ -135,13 +135,13 @@ const Dashboard = () => {
       const token = localStorage.getItem('access_token');
       if (editingTransaction) {
         await axios.put(
-          `${API_BASE_URL}/api/transactions/${editingTransaction.id}/`,
+          `${API_BASE_URL}/transactions/${editingTransaction.id}/`,
           transactionData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
         await axios.post(
-          `${API_BASE_URL}/api/transactions/`,
+          `${API_BASE_URL}/transactions/`,
           transactionData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -161,7 +161,7 @@ const Dashboard = () => {
     const token = localStorage.getItem('access_token');
     try {
       await axios.patch(
-        `${API_BASE_URL}/api/notifications/${id}/`, 
+        `${API_BASE_URL}/notifications/${id}/`, 
         { is_read: true },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -179,7 +179,7 @@ const Dashboard = () => {
     const token = localStorage.getItem('access_token');
     try {
       await axios.post(
-        `${API_BASE_URL}/api/budgets/`,
+        `${API_BASE_URL}/budgets/`,
         budget,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -195,7 +195,7 @@ const Dashboard = () => {
     const token = localStorage.getItem('access_token');
     try {
       await axios.delete(
-        `${API_BASE_URL}/api/transactions/${transactionId}/`, 
+        `${API_BASE_URL}/transactions/${transactionId}/`, 
         { headers: { Authorization: `Bearer ${token}` } }
       );
       await refreshData();
@@ -209,13 +209,13 @@ const Dashboard = () => {
     const token = localStorage.getItem('access_token');
     try {
       const [dashboardRes, monthlyRes, budgetsRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/api/dashboard/`, {
+        axios.get(`${API_BASE_URL}/dashboard/`, {
           headers: { Authorization: `Bearer ${token}` } }
         ),
-        axios.get(`${API_BASE_URL}/api/transactions/monthly/`, {
+        axios.get(`${API_BASE_URL}/transactions/monthly/`, {
           headers: { Authorization: `Bearer ${token}` } }
         ),
-        axios.get(`${API_BASE_URL}/api/budgets/`, {
+        axios.get(`${API_BASE_URL}/budgets/`, {
           headers: { Authorization: `Bearer ${token}` } }
         )
       ]);
@@ -230,7 +230,7 @@ const Dashboard = () => {
 
   const generateReport = useCallback(async (type = 'monthly') => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/reports/?type=${type}`, {
+      const response = await axios.get(`${API_BASE_URL}/reports/?type=${type}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
         responseType: 'blob'
       });

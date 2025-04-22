@@ -101,7 +101,7 @@ const TransactionForm = ({
         setIsPredicting(true);
         try {
           const response = await axios.post(
-            `${API_BASE_URL}/api/predict-category/`,
+            `${API_BASE_URL}/predict-category/`,
             {
               description: formData.description,
               amount: formData.amount,

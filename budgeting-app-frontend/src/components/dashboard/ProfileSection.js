@@ -25,7 +25,7 @@ const ProfileSection = ({ user, setUser }) => {
     const token = localStorage.getItem('access_token');
     try {
       const response = await axios.patch(
-        `${API_BASE_URL}/api/user/`, 
+        `${API_BASE_URL}/user/`, 
         profileForm, 
         { headers: { Authorization: `Bearer ${token}` } }
       );

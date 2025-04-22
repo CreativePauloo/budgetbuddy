@@ -33,7 +33,7 @@ const Chatbot = () => {
     setIsTyping(true);
     
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/chatbot/`, {
+      const response = await axios.post(`${API_BASE_URL}/chatbot/`, {
         message: userMessage,
         user_id: localStorage.getItem('user_id')
       }, {

@@ -27,7 +27,7 @@ const BudgetForm = ({
 
     try {
       const response = await axios.post(
-        `${API_BASE_URL}/api/budgets/`,
+        `${API_BASE_URL}/budgets/`,
         {
           category: newBudget.category,
           limit: parseFloat(newBudget.limit),
