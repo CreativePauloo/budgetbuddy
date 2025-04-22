@@ -25,7 +25,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "render-build": "npm run build"
+    "render-build": "npm run build",
+    "fix-permissions": "chmod -R +x node_modules/.bin/*"
   },
   "eslintConfig": {
     "extends": [
