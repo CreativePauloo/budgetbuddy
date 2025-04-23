@@ -8,3 +8,7 @@ On the frontend, React components like BudgetForm, TransactionsTable, and Charts
 
 PROJECT URL:
 https://budgetbuddy-frontend-nyw4.onrender.com
+
+
+BudgetBuddy Project Documentation:
+https://docs.google.com/document/d/1cLlX5v7nDnem4yNUY1Lj9hmKe82k72ZP/edit?usp=sharing&ouid=116384469025343273414&rtpof=true&sd=true
