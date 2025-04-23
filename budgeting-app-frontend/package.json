@@ -1,5 +1,6 @@
 {
   "name": "budgeting-app-frontend",
+  "homepage": "https://budgetbuddy-frontend-nyw4.onrender.com",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
