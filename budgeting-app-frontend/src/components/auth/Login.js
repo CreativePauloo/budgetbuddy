@@ -105,11 +105,11 @@ const Login = () => {
                 </form>
 
                 <p className="forgot-password">
-                    <a href="/forgot-password">Forgot password?</a>
+                    <a Link to="/forgot-password">Forgot password?</a>
                 </p>
 
                 <p className="register-link">
-                    Don't have an account? <a href="/register">Sign up</a>
+                    Don't have an account? <a Link to="/register">Sign up</a>
                 </p>
             </div>
         </div>
