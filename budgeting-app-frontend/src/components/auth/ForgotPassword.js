@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './ForgotPassword.css';
 
 const ForgotPassword = () => {
@@ -47,7 +47,7 @@ const ForgotPassword = () => {
                 {message && <p className="message">{message}</p>}
 
                 <p className="login-link">
-                    Remember your password? <a href="/login">Log in</a>
+                    Remember your password? <Link to="/login">Log in</Link>
                 </p>
             </div>
         </div>
