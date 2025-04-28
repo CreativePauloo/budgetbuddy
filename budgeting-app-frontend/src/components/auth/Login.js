@@ -25,7 +25,7 @@ const Login = () => {
         setError('');
         
         try {
-            const response = await axios.post(`${API_BASE_URL}/login/`, formData);
+            const response = await axios.post(`${API_BASE_URL}/login`, formData);
             console.log('Login successful:', response.data);
             localStorage.setItem('access_token', response.data.access); // Store token
             navigate('/dashboard'); // Redirect to dashboard
