@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, link } from 'react-router-dom';
 import './Login.css';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://budgetbuddy-backend-eq1x.onrender.com';
@@ -105,11 +105,11 @@ const Login = () => {
                 </form>
 
                 <p className="forgot-password">
-                    <a href="/forgot-password">Forgot password?</a>
+                    <Link to="/forgot-password">Forgot password?</Link>
                 </p>
 
                 <p className="register-link">
-                    Don't have an account? <a href="/register">Sign up</a>
+                    Don't have an account? <Link to="/register">Sign up</Link>
                 </p>
             </div>
         </div>
