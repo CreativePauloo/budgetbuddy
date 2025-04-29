@@ -17,11 +17,11 @@ from .views import (
 )
 
 urlpatterns = [
-    path('api/register/', UserRegistrationView.as_view(), name='register'),
-    path('api/login/', CustomTokenObtainPairView.as_view(), name='login'),
+    path('register/', UserRegistrationView.as_view(), name='register'),
+    path('login/', CustomTokenObtainPairView.as_view(), name='login'),
     path('api/user/', UserView.as_view(), name='user'),
     path('api/transactions/', TransactionView.as_view(), name='transactions'),
-    path('api/forgot-password/', ForgotPasswordView.as_view(), name='forgot-password'),
+    path('forgot-password/', ForgotPasswordView.as_view(), name='forgot-password'),
     path('api/comments/', CommentView.as_view(), name='comments'),
     path('api/dashboard/', DashboardDataView.as_view(), name='dashboard'),
     path('api/notifications/', NotificationView.as_view(), name='notifications'),
