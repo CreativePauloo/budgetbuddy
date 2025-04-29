@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from .views import (
     DashboardDataView,
     UserView,
@@ -27,10 +27,14 @@ urlpatterns = [
     path('notifications/', NotificationView.as_view(), name='notifications'),
     path('transactions/monthly/', MonthlyTransactionsView.as_view(), name='monthly-transactions'),
     path('transactions/<int:pk>/', TransactionView.as_view(), name='transaction-detail'),
-    path('api/transaction-categories/', TransactionCategoriesView.as_view(), name='transaction-categories'),
+    path('transaction-categories/', TransactionCategoriesView.as_view(), name='transaction-categories'),
     path('notifications/<int:pk>/', NotificationView.as_view(), name='notification-detail'),
     path('budgets/', BudgetView.as_view(), name='budgets'),
     path('reports/', ReportView.as_view(), name='reports'),
     path('chatbot/', ChatbotView.as_view(), name='chatbot'),
     path('categorize/', predict_category, name='predict_category'),
+]
+# Combine all API paths into a single urlpatterns list
+urlpatterns += [
+    path('api/', include(urlpatterns)),
 ]
