@@ -16,8 +16,6 @@ import Chatbot from '../common/Chatbot';
 import { formatMoney, getCategoryIcon, formatMonthlyData } from '../common/helpers';
 import './Dashboard.css';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://budgetbuddy-backend-eq1x.onrender.com/api';
-
 const Dashboard = () => {
   const [activeMenu, setActiveMenu] = useState('dashboard');
   const [dashboardData, setDashboardData] = useState(null);
