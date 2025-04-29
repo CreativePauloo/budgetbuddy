@@ -42,7 +42,6 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        // Basic client-side
         if (formData.password !== formData.confirmPassword) {
             setError('Passwords do not match');
             return;
@@ -57,24 +56,26 @@ const Register = () => {
         }
 
         try {
-            const response = await axios.post('https://budgetbuddy-backend-eq1x.onrender.com/api/register/', {
-                username: formData.username,
-                email: formData.email,
-                password: formData.password,
-            }, {
-                headers: {
-                    'Content-Type': 'application/json',
+            const response = await axios.post(
+                'https://budgetbuddy-backend-eq1x.onrender.com/api/register/', 
+                {
+                    username: formData.username,
+                    email: formData.email,
+                    password: formData.password,
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
                 }
-            });
+            );
             
             setSuccessMessage('Registration successful! Redirecting...');
             setTimeout(() => navigate('/login'), 2000);
         } catch (err) {
             if (err.response) {
-                // Handle Django validation errors
                 const serverErrors = err.response.data;
                 if (typeof serverErrors === 'object') {
-                    // Join all error messages
                     const errorMsg = Object.values(serverErrors).flat().join(' ');
                     setError(errorMsg);
                 } else {

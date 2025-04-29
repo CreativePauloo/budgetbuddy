@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import './Login.css';
 
-
 const Login = () => {
     const [formData, setFormData] = useState({
         username: '', 
@@ -15,7 +14,7 @@ const Login = () => {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
-        setError(''); // Clear error when user types
+        setError('');
     };
 
     const handleSubmit = async (e) => {
@@ -24,14 +23,20 @@ const Login = () => {
         setError('');
         
         try {
-            const response = await axios.post('https://budgetbuddy-backend-eq1x.onrender.com/api/login/', formData);
-            console.log('Login successful:', response.data);
-            localStorage.setItem('access_token', response.data.access); // Store token
-            navigate('/dashboard'); // Redirect to dashboard
-        } catch (error) {
-            console.error('Login failed:', error);
+            const response = await axios.post(
+                'https://budgetbuddy-backend-eq1x.onrender.com/api/login/', 
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }
+            );
             
-            // Set user-friendly error message
+            localStorage.setItem('access_token', response.data.access);
+            localStorage.setItem('refresh_token', response.data.refresh);
+            navigate('/dashboard');
+        } catch (error) {
             if (error.response) {
                 if (error.response.status === 401) {
                     setError('Invalid username or password. Please try again.');

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import api_view
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -31,6 +31,7 @@ import joblib
 import os
 from .ml.predictor import TransactionClassifier
 from datetime import datetime
+from rest_framework.permissions import AllowAny
 
 classifier = TransactionClassifier()
 
@@ -425,6 +426,8 @@ class ChatbotView(APIView):
             return Response({'response': "Sorry, I'm having trouble accessing your data right now. Please try again later."})
 
 class UserRegistrationView(APIView):
+    permission_classes = [AllowAny] 
+    
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
@@ -435,28 +438,26 @@ class UserRegistrationView(APIView):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+    permission_classes = [AllowAny]
     
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
-        
-        # If login fails (status code 401), customize the error message
         if response.status_code == 401:
             error_message = "Invalid username or password. Please try again."
             response.data = {'error': error_message}
-            
         return response
 
 
 class ForgotPasswordView(APIView):
+    permission_classes = [AllowAny]
+    
     def post(self, request):
         email = request.data.get('email')
         try:
             user = User.objects.get(email=email)
-            # Generate a reset token (you can use Django's built-in password reset tools)
-            reset_token = "generate-a-unique-token-here"  # Replace with actual token generation logic
+            reset_token = "generate-a-unique-token-here"
             reset_link = f"https://budgetbuddy-frontend-nyw4.onrender.com/reset-password/{reset_token}"
 
-            # Send the reset link via email
             send_mail(
                 'Password Reset Request',
                 f'Click the link to reset your password: {reset_link}',
@@ -464,9 +465,11 @@ class ForgotPasswordView(APIView):
                 [email],
                 fail_silently=False,
             )
-            return Response({'message': 'Password reset link sent to your email'}, status=status.HTTP_200_OK)
+            return Response({'message': 'Password reset link sent to your email'}, 
+                          status=status.HTTP_200_OK)
         except User.DoesNotExist:
-            return Response({'error': 'User with this email does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'User with this email does not exist'}, 
+                          status=status.HTTP_404_NOT_FOUND)
 
 
 class CommentView(APIView):
