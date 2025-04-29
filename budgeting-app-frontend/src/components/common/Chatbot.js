@@ -4,8 +4,6 @@ import { faTimes, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import './Chatbot.css';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://budgetbuddy-backend-eq1x.onrender.com/api';
-
 const Chatbot = () => {
   const [chatbotOpen, setChatbotOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState([
@@ -33,7 +31,7 @@ const Chatbot = () => {
     setIsTyping(true);
     
     try {
-      const response = await axios.post(`${API_BASE_URL}/chatbot/`, {
+      const response = await axios.post('https://budgetbuddy-backend-eq1x.onrender.com/api/chatbot/', {
         message: userMessage,
         user_id: localStorage.getItem('user_id')
       }, {

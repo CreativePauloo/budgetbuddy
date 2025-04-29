@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import './BudgetForm.css'; 
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://budgetbuddy-backend-eq1x.onrender.com/api';
 
 const BudgetForm = ({ 
   isOpen, 
@@ -27,7 +26,7 @@ const BudgetForm = ({
 
     try {
       const response = await axios.post(
-        `${API_BASE_URL}/budgets/`,
+        'https://budgetbuddy-backend-eq1x.onrender.com/api/budgets/',
         {
           category: newBudget.category,
           limit: parseFloat(newBudget.limit),

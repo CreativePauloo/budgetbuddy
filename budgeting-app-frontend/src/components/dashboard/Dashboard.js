@@ -47,19 +47,19 @@ const Dashboard = () => {
     setIsDataLoading(true);
     try {
       const [dashboardRes, userRes, notificationsRes, budgetsRes, monthlyRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/dashboard/`, {
+        axios.get('https://budgetbuddy-backend-eq1x.onrender.com/api/dashboard/', {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get(`${API_BASE_URL}/user/`, {
+        axios.get('https://budgetbuddy-backend-eq1x.onrender.com/api/user/', {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        axios.get(`${API_BASE_URL}/notifications/`, {
+        axios.get('https://budgetbuddy-backend-eq1x.onrender.com/api/notifications/', {
           headers: { Authorization: `Bearer ${token}` }
         }).catch(() => ({ data: [] })),
-        axios.get(`${API_BASE_URL}/budgets/`, {
+        axios.get('https://budgetbuddy-backend-eq1x.onrender.com/api/budgets/', {
           headers: { Authorization: `Bearer ${token}` }
         }).catch(() => ({ data: [] })),
-        axios.get(`${API_BASE_URL}/transactions/monthly/`, {
+        axios.get('https://budgetbuddy-backend-eq1x.onrender.com/api/transactions/monthly/', {
           headers: { Authorization: `Bearer ${token}` }
         }).catch(() => ({ data: [] }))
       ]);
@@ -135,13 +135,13 @@ const Dashboard = () => {
       const token = localStorage.getItem('access_token');
       if (editingTransaction) {
         await axios.put(
-          `${API_BASE_URL}/transactions/${editingTransaction.id}/`,
+          'https://budgetbuddy-backend-eq1x.onrender.com/api/transactions/${editingTransaction.id}/',
           transactionData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
         await axios.post(
-          `${API_BASE_URL}/transactions/`,
+          'https://budgetbuddy-backend-eq1x.onrender.com/api/transactions/',
           transactionData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -161,7 +161,7 @@ const Dashboard = () => {
     const token = localStorage.getItem('access_token');
     try {
       await axios.patch(
-        `${API_BASE_URL}/notifications/${id}/`, 
+        'https://budgetbuddy-backend-eq1x.onrender.com/api/notifications/${id}/', 
         { is_read: true },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -179,7 +179,7 @@ const Dashboard = () => {
     const token = localStorage.getItem('access_token');
     try {
       await axios.post(
-        `${API_BASE_URL}/budgets/`,
+        'https://budgetbuddy-backend-eq1x.onrender.com/api/budgets/',
         budget,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -195,7 +195,7 @@ const Dashboard = () => {
     const token = localStorage.getItem('access_token');
     try {
       await axios.delete(
-        `${API_BASE_URL}/transactions/${transactionId}/`, 
+        `https://budgetbuddy-backend-eq1x.onrender.com/api/transactions/${transactionId}/`, 
         { headers: { Authorization: `Bearer ${token}` } }
       );
       await refreshData();
@@ -209,13 +209,13 @@ const Dashboard = () => {
     const token = localStorage.getItem('access_token');
     try {
       const [dashboardRes, monthlyRes, budgetsRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/dashboard/`, {
+        axios.get('https://budgetbuddy-backend-eq1x.onrender.com/api/dashboard/', {
           headers: { Authorization: `Bearer ${token}` } }
         ),
-        axios.get(`${API_BASE_URL}/transactions/monthly/`, {
+        axios.get('https://budgetbuddy-backend-eq1x.onrender.com/api/transactions/monthly/', {
           headers: { Authorization: `Bearer ${token}` } }
         ),
-        axios.get(`${API_BASE_URL}/budgets/`, {
+        axios.get('https://budgetbuddy-backend-eq1x.onrender.com/api/budgets/', {
           headers: { Authorization: `Bearer ${token}` } }
         )
       ]);
@@ -230,7 +230,7 @@ const Dashboard = () => {
 
   const generateReport = useCallback(async (type = 'monthly') => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/reports/?type=${type}`, {
+      const response = await axios.get(`https://budgetbuddy-backend-eq1x.onrender.com/api/reports/?type=${type}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
         responseType: 'blob'
       });

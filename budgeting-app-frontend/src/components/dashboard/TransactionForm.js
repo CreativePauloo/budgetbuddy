@@ -4,8 +4,6 @@ import { faTimes, faMagic, faCheckCircle } from '@fortawesome/free-solid-svg-ico
 import axios from 'axios';
 import './TransactionForm.css';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://budgetbuddy-backend-eq1x.onrender.com/api';
-
 // Memoized Suggestion Button Component
 const SuggestionButton = React.memo(({ suggestion, onClick }) => (
   <button
@@ -101,7 +99,7 @@ const TransactionForm = ({
         setIsPredicting(true);
         try {
           const response = await axios.post(
-            `${API_BASE_URL}/predict-category/`,
+            'https://budgetbuddy-backend-eq1x.onrender.com/api/predict-category/',
             {
               description: formData.description,
               amount: formData.amount,

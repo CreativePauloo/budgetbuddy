@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './ProfileSection.css';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://budgetbuddy-backend-eq1x.onrender.com/api';
-
 const ProfileSection = ({ user, setUser }) => {
   const [editMode, setEditMode] = useState(false);
   const [profileForm, setProfileForm] = useState({
@@ -25,7 +23,7 @@ const ProfileSection = ({ user, setUser }) => {
     const token = localStorage.getItem('access_token');
     try {
       const response = await axios.patch(
-        `${API_BASE_URL}/user/`, 
+        'https://budgetbuddy-backend-eq1x.onrender.com/api/user/', 
         profileForm, 
         { headers: { Authorization: `Bearer ${token}` } }
       );
